@@ -1,12 +1,17 @@
 import { useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
-  const { signIn } = useAuth()
+  const { user, signIn } = useAuth()
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Si ya está logueado, redirigir al dashboard
+  if (user) return <Navigate to="/" replace />
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -16,14 +21,15 @@ export default function Login() {
     const { error } = await signIn(email, password)
     if (error) {
       setError('Email o contraseña incorrectos')
+      setLoading(false)
+    } else {
+      navigate('/')
     }
-    setLoading(false)
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-crema-suave p-6">
       <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 rounded-full bg-verde flex items-center justify-center border-2 border-crema mb-3">
             <span className="text-crema text-3xl font-bold">S</span>
