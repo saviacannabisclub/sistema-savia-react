@@ -6,17 +6,15 @@ export const GESTION_PCT = 0.02
  * @param {number} gramos - Gramos a retirar
  * @param {number} valorGramo - Valor por gramo (ARS)
  * @param {number} envio - Costo de envío del socio (ARS)
- * @returns {object} { base, gestion, envio, total }
+ * @returns {object} { base, envio, total }
  */
 export function calcularAporte(gramos, valorGramo, envio = 0) {
   const base = (gramos || 0) * (valorGramo || 0)
-  const gestion = Math.round(base * GESTION_PCT)
   const envioNum = envio || 0
   return {
     base,
-    gestion,
     envio: envioNum,
-    total: base + gestion + envioNum,
+    total: base + envioNum,
   }
 }
 
