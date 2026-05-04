@@ -8,3 +8,9 @@ body {
   color: #1a1a1a;
   margin: 0;
 }
+
+@layer components {
+  .form-input {
+    @apply w-full px-3 py-2 border border-crema-oscuro rounded-lg bg-crema-suave focus:outline-none focus:border-verde transition;
+  }
+}
