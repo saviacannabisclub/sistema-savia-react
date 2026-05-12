@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, X } from 'lucide-react'
-import { useGeneticas } from '../hooks/useGeneticas'
+import { useGeneticas } from '../Hooks/useGeneticas'
 
 const TIPOS = ['Indica', 'Sativa', 'Mixta', 'CBD']
 

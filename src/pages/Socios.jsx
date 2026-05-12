@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, X } from 'lucide-react'
-import { useSocios } from '../hooks/useSocios'
+import { useSocios } from '../Hooks/useSocios'
 import { siguienteNumeroSocio } from '../lib/calculos'
 import { fmt } from '../lib/format'
 

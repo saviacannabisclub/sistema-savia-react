@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Plus, Trash2, X } from 'lucide-react'
-import { useIngresos } from '../hooks/useIngresos'
-import { useSocios } from '../hooks/useSocios'
+import { useIngresos } from '../Hooks/useIngresos'
+import { useSocios } from '../Hooks/useSocios'
 import { fmt, fmtFecha, todayISO } from '../lib/format'
 
 const TIPOS = [

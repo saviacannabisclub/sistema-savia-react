@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Save } from 'lucide-react'
-import { useConfig } from '../hooks/useConfig'
+import { useConfig } from '../Hooks/useConfig'
 
 export default function Ajustes() {
   const { config, loading, updateConfig } = useConfig()

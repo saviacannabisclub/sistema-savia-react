@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, X } from 'lucide-react'
-import { useCosechas } from '../hooks/useCosechas'
-import { useGeneticas } from '../hooks/useGeneticas'
+import { useCosechas } from '../Hooks/useCosechas'
+import { useGeneticas } from '../Hooks/useGeneticas'
 import { fmtFecha, todayISO } from '../lib/format'
 
 const FORM_VACIO = {

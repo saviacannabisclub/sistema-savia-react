@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus, Trash2, X } from 'lucide-react'
-import { useEgresos } from '../hooks/useEgresos'
+import { useEgresos } from '../Hooks/useEgresos'
 import { fmt, fmtFecha, todayISO } from '../lib/format'
 
 const TIPOS = [
