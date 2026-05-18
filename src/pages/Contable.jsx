@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
-import { useRetiros } from '../hooks/useRetiros'
-import { useIngresos } from '../hooks/useIngresos'
-import { useEgresos } from '../hooks/useEgresos'
-import { useSocios } from '../hooks/useSocios'
+import { useRetiros } from '../Hooks/useRetiros'
+import { useIngresos } from '../Hooks/useIngresos'
+import { useEgresos } from '../Hooks/useEgresos'
+import { useSocios } from '../Hooks/useSocios'
 import { fmt, fmtFecha } from '../lib/format'
 
 const PERIODOS = [
