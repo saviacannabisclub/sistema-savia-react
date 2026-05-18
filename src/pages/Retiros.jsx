@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
 import { Plus, Trash2, X } from 'lucide-react'
-import { useRetiros } from '../hooks/useRetiros'
-import { useSocios } from '../hooks/useSocios'
-import { useGeneticas } from '../hooks/useGeneticas'
-import { useCosechas } from '../hooks/useCosechas'
+import { useRetiros } from '../Hooks/useRetiros'
+import { useSocios } from '../Hooks/useSocios'
+import { useGeneticas } from '../Hooks/useGeneticas'
+import { useCosechas } from '../Hooks/useCosechas'
 import { stockPorGenetica } from '../lib/calculos'
 import { fmtFecha } from '../lib/format'
 
