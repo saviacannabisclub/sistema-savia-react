@@ -38,7 +38,6 @@ export function useSocios() {
         reprocann: datos.reprocann || '',
         tel: datos.tel || '',
         direccion: datos.direccion || '',
-        costo_envio: parseFloat(datos.costo_envio) || 0,
         activo: true,
         es_demo: false,
       }])
@@ -64,7 +63,6 @@ export function useSocios() {
         reprocann: datos.reprocann || '',
         tel: datos.tel || '',
         direccion: datos.direccion || '',
-        costo_envio: parseFloat(datos.costo_envio) || 0,
       })
       .eq('id', id)
       .select()

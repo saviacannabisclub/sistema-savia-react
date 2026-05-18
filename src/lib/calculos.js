@@ -1,29 +1,5 @@
-// Constante: porcentaje de gestión sobre el material
-export const GESTION_PCT = 0.02
-
-/**
- * Calcula el aporte total de un retiro.
- * @param {number} gramos - Gramos a retirar
- * @param {number} valorGramo - Valor por gramo (ARS)
- * @param {number} envio - Costo de envío del socio (ARS)
- * @returns {object} { base, envio, total }
- */
-export function calcularAporte(gramos, valorGramo, envio = 0) {
-  const base = (gramos || 0) * (valorGramo || 0)
-  const envioNum = envio || 0
-  return {
-    base,
-    envio: envioNum,
-    total: base + envioNum,
-  }
-}
-
 /**
  * Calcula el stock disponible por genética.
- * @param {Array} geneticas - Lista de genéticas
- * @param {Array} cosechas - Lista de cosechas
- * @param {Array} retiros - Lista de retiros
- * @returns {Object} Mapa { geneticaId: gramos }
  */
 export function stockPorGenetica(geneticas, cosechas, retiros) {
   const stock = {}
@@ -35,19 +11,17 @@ export function stockPorGenetica(geneticas, cosechas, retiros) {
     }
   })
 
-  retiros
-    .filter((r) => r.estado !== 'cancelado')
-    .forEach((r) => {
-      if (stock[r.genetica_id] !== undefined) {
-        stock[r.genetica_id] -= Number(r.gramos) || 0
-      }
-    })
+  retiros.forEach((r) => {
+    if (stock[r.genetica_id] !== undefined) {
+      stock[r.genetica_id] -= Number(r.gramos) || 0
+    }
+  })
 
   return stock
 }
 
 /**
- * Genera el siguiente número de socio (formato '001', '002'...).
+ * Genera el siguiente número de socio.
  */
 export function siguienteNumeroSocio(socios) {
   const nums = socios.map((s) => parseInt(s.numero) || 0)
@@ -56,7 +30,7 @@ export function siguienteNumeroSocio(socios) {
 }
 
 /**
- * Genera un número de lote único basado en timestamp.
+ * Genera un número de lote único.
  */
 export function generarLote(prefijo = 'L') {
   return `${prefijo}${Date.now().toString().slice(-6)}`

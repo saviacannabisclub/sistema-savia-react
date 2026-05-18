@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, X } from 'lucide-react'
-import { useSocios } from '../Hooks/useSocios'
+import { useSocios } from '../hooks/useSocios'
 import { siguienteNumeroSocio } from '../lib/calculos'
-import { fmt } from '../lib/format'
 
 const FORM_VACIO = {
   nombre: '',
@@ -10,7 +9,6 @@ const FORM_VACIO = {
   reprocann: '',
   tel: '',
   direccion: '',
-  costo_envio: '',
 }
 
 export default function Socios() {
@@ -33,7 +31,6 @@ export default function Socios() {
       reprocann: s.reprocann || '',
       tel: s.tel || '',
       direccion: s.direccion || '',
-      costo_envio: s.costo_envio || '',
     })
     setModalOpen(true)
   }
@@ -45,9 +42,7 @@ export default function Socios() {
 
   const guardar = async (e) => {
     e.preventDefault()
-    if (!form.nombre.trim() || !form.reprocann.trim()) {
-      return
-    }
+    if (!form.nombre.trim() || !form.reprocann.trim()) return
     if (editando) {
       await updateSocio(editando.id, form)
     } else {
@@ -61,17 +56,13 @@ export default function Socios() {
     await deleteSocio(s.id)
   }
 
-  if (loading) {
-    return <p className="text-gray-500">Cargando socios...</p>
-  }
+  if (loading) return <p className="text-gray-500">Cargando socios...</p>
 
-  // Ocultar el socio demo si existe
   const socios_filtrados = socios.filter((s) => !s.es_demo)
   const proximoNumero = siguienteNumeroSocio(socios)
 
   return (
     <div>
-      {/* Encabezado */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold text-verde">Socios 👥</h2>
         <button
@@ -82,7 +73,6 @@ export default function Socios() {
         </button>
       </div>
 
-      {/* Lista */}
       {socios_filtrados.length === 0 ? (
         <div className="bg-white rounded-xl border border-crema-oscuro p-5">
           <p className="text-sm text-gray-500">No hay socios cargados.</p>
@@ -118,9 +108,6 @@ export default function Socios() {
                     )}
                     {s.direccion && <div>📍 {s.direccion}</div>}
                     {s.tel && <div>📱 {s.tel}</div>}
-                    <div>
-                      Envío: <span className="font-semibold">{fmt(s.costo_envio)}</span>
-                    </div>
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
@@ -153,7 +140,6 @@ export default function Socios() {
         </div>
       )}
 
-      {/* Modal */}
       {modalOpen && (
         <div
           className="fixed inset-0 bg-black/60 z-[1000] flex items-center justify-center p-4"
@@ -167,10 +153,7 @@ export default function Socios() {
               <h3 className="text-lg font-bold text-verde">
                 {editando ? 'Editar Socio' : 'Nuevo Socio'}
               </h3>
-              <button
-                onClick={cerrarModal}
-                className="text-gray-500 hover:text-gray-800 text-xl leading-none"
-              >
+              <button onClick={cerrarModal} className="text-gray-500 hover:text-gray-800">
                 <X size={20} />
               </button>
             </div>
@@ -231,16 +214,6 @@ export default function Socios() {
                 />
               </Field>
 
-              <Field label="Costo de envío (ARS)">
-                <input
-                  type="number"
-                  value={form.costo_envio}
-                  onChange={(e) => setForm({ ...form, costo_envio: e.target.value })}
-                  className="form-input"
-                  placeholder="ej: 3000"
-                />
-              </Field>
-
               <button
                 type="submit"
                 className="w-full bg-verde text-white font-semibold py-2.5 rounded-lg hover:bg-verde-oscuro transition mt-2"
@@ -255,7 +228,6 @@ export default function Socios() {
   )
 }
 
-// Componente helper para el formulario
 function Field({ label, children }) {
   return (
     <div>
