@@ -1,14 +1,25 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, X } from 'lucide-react'
 import { useGeneticas } from '../Hooks/useGeneticas'
+import { useCosechas } from '../Hooks/useCosechas'
+import { useRetiros } from '../Hooks/useRetiros'
+import { stockPorGenetica } from '../lib/calculos'
 
 const TIPOS = ['Indica', 'Sativa', 'Mixta', 'CBD']
 
 export default function Geneticas() {
   const { geneticas, loading, createGenetica, updateGenetica, toggleGenetica, deleteGenetica } = useGeneticas()
+  const { cosechas } = useCosechas()
+  const { retiros } = useRetiros()
+
   const [modalOpen, setModalOpen] = useState(false)
   const [editando, setEditando] = useState(null)
   const [form, setForm] = useState({ nombre: '', tipo: 'Mixta' })
+
+  const stock = useMemo(
+    () => stockPorGenetica(geneticas, cosechas, retiros),
+    [geneticas, cosechas, retiros]
+  )
 
   const abrirNueva = () => {
     setEditando(null)
@@ -67,56 +78,69 @@ export default function Geneticas() {
         </div>
       ) : (
         <div className="space-y-2.5">
-          {geneticas.map((g) => (
-            <div
-              key={g.id}
-              className={`bg-white rounded-xl border border-crema-oscuro p-4 transition ${
-                !g.activa ? 'opacity-60' : ''
-              }`}
-            >
-              <div className="flex justify-between items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-verde">{g.nombre}</div>
-                  <div className="text-xs text-gray-500 mt-0.5 font-sans">{g.tipo}</div>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span
-                    className={`text-[11px] px-2.5 py-0.5 rounded-full font-sans font-semibold ${
-                      g.activa
-                        ? 'bg-verde/10 text-verde border border-verde/40'
-                        : 'bg-gray-200 text-gray-500 border border-gray-300'
-                    }`}
-                  >
-                    {g.activa ? 'Activa' : 'Inactiva'}
-                  </span>
-                  <button
-                    onClick={() => abrirEditar(g)}
-                    className="text-verde hover:bg-verde/10 p-1.5 rounded transition"
-                    title="Editar"
-                  >
-                    <Pencil size={15} />
-                  </button>
-                  <button
-                    onClick={() => toggleGenetica(g.id)}
-                    className={`text-xs px-2.5 py-1 rounded-lg border font-semibold font-sans transition ${
-                      g.activa
-                        ? 'border-red-500 text-red-600 hover:bg-red-50'
-                        : 'border-verde text-verde hover:bg-verde/10'
-                    }`}
-                  >
-                    {g.activa ? 'Pausar' : 'Activar'}
-                  </button>
-                  <button
-                    onClick={() => eliminar(g)}
-                    className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
-                    title="Eliminar"
-                  >
-                    <Trash2 size={15} />
-                  </button>
+          {geneticas.map((g) => {
+            const stockGr = stock[g.id] || 0
+            const colorStock =
+              stockGr <= 0   ? 'bg-red-50 text-red-700 border-red-200' :
+              stockGr < 10   ? 'bg-ambar/10 text-ambar border-ambar/40' :
+                               'bg-verde/10 text-verde border-verde/40'
+
+            return (
+              <div
+                key={g.id}
+                className={`bg-white rounded-xl border border-crema-oscuro p-4 transition ${
+                  !g.activa ? 'opacity-60' : ''
+                }`}
+              >
+                <div className="flex justify-between items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-verde">{g.nombre}</div>
+                    <div className="text-xs text-gray-500 mt-0.5 font-sans flex items-center gap-2 flex-wrap">
+                      <span>{g.tipo}</span>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold border ${colorStock}`}>
+                        {stockGr}g disponibles
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span
+                      className={`text-[11px] px-2.5 py-0.5 rounded-full font-sans font-semibold ${
+                        g.activa
+                          ? 'bg-verde/10 text-verde border border-verde/40'
+                          : 'bg-gray-200 text-gray-500 border border-gray-300'
+                      }`}
+                    >
+                      {g.activa ? 'Activa' : 'Inactiva'}
+                    </span>
+                    <button
+                      onClick={() => abrirEditar(g)}
+                      className="text-verde hover:bg-verde/10 p-1.5 rounded transition"
+                      title="Editar"
+                    >
+                      <Pencil size={15} />
+                    </button>
+                    <button
+                      onClick={() => toggleGenetica(g.id)}
+                      className={`text-xs px-2.5 py-1 rounded-lg border font-semibold font-sans transition ${
+                        g.activa
+                          ? 'border-red-500 text-red-600 hover:bg-red-50'
+                          : 'border-verde text-verde hover:bg-verde/10'
+                      }`}
+                    >
+                      {g.activa ? 'Pausar' : 'Activar'}
+                    </button>
+                    <button
+                      onClick={() => eliminar(g)}
+                      className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
+                      title="Eliminar"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
@@ -152,7 +176,7 @@ export default function Geneticas() {
                   required
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                  className="w-full px-3 py-2 border border-crema-oscuro rounded-lg bg-crema-suave focus:outline-none focus:border-verde"
+                  className="form-input"
                   placeholder="ej: Blue Dream"
                   autoFocus
                 />
@@ -165,7 +189,7 @@ export default function Geneticas() {
                 <select
                   value={form.tipo}
                   onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-                  className="w-full px-3 py-2 border border-crema-oscuro rounded-lg bg-crema-suave focus:outline-none focus:border-verde"
+                  className="form-input"
                 >
                   {TIPOS.map((t) => (
                     <option key={t} value={t}>{t}</option>

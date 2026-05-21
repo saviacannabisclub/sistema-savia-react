@@ -1,25 +1,32 @@
 /**
  * Calcula el stock disponible por genética.
+ * Convertimos los IDs a Number para evitar problemas de tipo string/number.
  */
 export function stockPorGenetica(geneticas, cosechas, retiros) {
   const stock = {}
-  geneticas.forEach((g) => (stock[g.id] = 0))
+  geneticas.forEach((g) => {
+    stock[Number(g.id)] = 0
+  })
 
   cosechas.forEach((c) => {
-    if (stock[c.genetica_id] !== undefined) {
-      stock[c.genetica_id] += Number(c.gramos) || 0
+    const id = Number(c.genetica_id)
+    if (stock[id] !== undefined) {
+      stock[id] += Number(c.gramos) || 0
     }
   })
 
   retiros.forEach((r) => {
-    if (stock[r.genetica_id] !== undefined) {
-      stock[r.genetica_id] -= Number(r.gramos) || 0
-    }
+    const items = r.items || []
+    items.forEach((item) => {
+      const id = Number(item.genetica_id)
+      if (stock[id] !== undefined) {
+        stock[id] -= Number(item.gramos) || 0
+      }
+    })
   })
 
   return stock
 }
-
 /**
  * Genera el siguiente número de socio.
  */

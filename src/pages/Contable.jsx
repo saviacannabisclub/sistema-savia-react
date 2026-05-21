@@ -41,7 +41,10 @@ export default function Contable() {
 
   const totalIngresos = ingF.reduce((a, i) => a + Number(i.monto), 0)
   const totalEgresos  = egrF.reduce((a, e) => a + Number(e.monto), 0)
-  const totalGramos   = retF.reduce((a, r) => a + Number(r.gramos), 0)
+  const totalGramos   = retF.reduce((a, r) => {
+    const itemsTotal = (r.items || []).reduce((acc, it) => acc + Number(it.gramos), 0)
+    return a + itemsTotal
+  }, 0)
   const saldo         = totalIngresos - totalEgresos
 
   const movimientos = useMemo(() => {
@@ -66,17 +69,21 @@ export default function Contable() {
     return m.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
   }, [ingF, egrF])
 
-  // Retiros por socio (en gramos)
+  // Retiros por socio (en gramos, sumando los items de cada retiro)
   const retirosPorSocio = useMemo(() => {
     return socios
       .filter((s) => !s.es_demo)
       .map((s) => {
         const rs = retF.filter((r) => r.socio_id === s.id)
         if (!rs.length) return null
+        const gramos_total = rs.reduce((a, r) => {
+          const itemsTotal = (r.items || []).reduce((acc, it) => acc + Number(it.gramos), 0)
+          return a + itemsTotal
+        }, 0)
         return {
           ...s,
           retiros_count: rs.length,
-          gramos_total: rs.reduce((a, r) => a + Number(r.gramos), 0),
+          gramos_total,
         }
       })
       .filter(Boolean)
