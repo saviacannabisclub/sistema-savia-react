@@ -33,7 +33,7 @@ export function useRetiros() {
    * @param {object} socio - El socio que retira
    * @param {Array} items - Array de { genetica, gramos }
    */
-  const createRetiro = async ({ socio, items }) => {
+const createRetiro = async ({ socio, items, fecha }) => {
     if (!items || items.length === 0) {
       toast.error('Agregá al menos una genética')
       return null
@@ -43,7 +43,7 @@ export function useRetiros() {
     const { data: retiro, error: errRetiro } = await supabase
       .from('retiros')
       .insert([{
-        fecha: new Date().toISOString(),
+        fecha: fecha || new Date().toISOString(),
         socio_id: socio.id,
         socio_nombre: socio.nombre,
         socio_numero: socio.numero,
@@ -72,7 +72,6 @@ export function useRetiros() {
       .select()
 
     if (errItems) {
-      // Si falla la creación de items, borramos el retiro para no dejar registros huérfanos
       await supabase.from('retiros').delete().eq('id', retiro.id)
       toast.error('Error al crear items del retiro')
       console.error(errItems)
@@ -81,7 +80,7 @@ export function useRetiros() {
 
     toast.success('Retiro registrado')
     const retiroCompleto = { ...retiro, items: itemsCreados }
-    setRetiros((prev) => [retiroCompleto, ...prev])
+    setRetiros((prev) => [retiroCompleto, ...prev].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)))
     return retiroCompleto
   }
 

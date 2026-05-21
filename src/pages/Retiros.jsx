@@ -7,6 +7,10 @@ import { useCosechas } from '../Hooks/useCosechas'
 import { stockPorGenetica } from '../lib/calculos'
 import { fmtFecha } from '../lib/format'
 
+
+// Item vacío para el formulario
+const ITEM_VACIO = { genetica_id: '', gramos: '' }
+
 export default function Retiros() {
   const { retiros, loading, createRetiro, deleteRetiro } = useRetiros()
   const { socios } = useSocios()
@@ -15,8 +19,8 @@ export default function Retiros() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [socioId, setSocioId] = useState('')
-  // Items: array de { genetica_id, gramos }
-  const [items, setItems] = useState([{ genetica_id: '', gramos: '' }])
+  const [fecha, setFecha] = useState('')
+  const [items, setItems] = useState([{ ...ITEM_VACIO }])
 
   const stock = useMemo(
     () => stockPorGenetica(geneticas, cosechas, retiros),
@@ -39,9 +43,10 @@ export default function Retiros() {
   const sociosActivos = socios.filter((s) => s.activo && !s.es_demo)
   const geneticasActivas = geneticas.filter((g) => g.activa)
 
-  const abrirNuevo = () => {
+const abrirNuevo = () => {
     setSocioId('')
-    setItems([{ genetica_id: '', gramos: '' }])
+    setFecha(new Date().toISOString().split('T')[0]) // hoy por defecto
+    setItems([{ ...ITEM_VACIO }])
     setModalOpen(true)
   }
 
@@ -83,7 +88,11 @@ export default function Retiros() {
       gramos: parseFloat(it.gramos),
     }))
 
-    await createRetiro({ socio, items: itemsParaCrear })
+await createRetiro({
+      socio: socio,
+      items: itemsParaCrear,
+      fecha: fecha ? new Date(fecha).toISOString() : null,
+    })
     setModalOpen(false)
   }
 
@@ -188,6 +197,19 @@ export default function Retiros() {
                     </option>
                   ))}
                 </select>
+              </div>
+{/* Fecha */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1 font-sans">
+                  Fecha del retiro *
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={fecha}
+                  onChange={(e) => setFecha(e.target.value)}
+                  className="form-input"
+                />
               </div>
 
               {/* Items: una fila por genética */}
