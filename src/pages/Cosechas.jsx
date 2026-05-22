@@ -87,51 +87,54 @@ export default function Cosechas() {
         </button>
       </div>
 
-      {/* Lista */}
+      {/* Tabla */}
       {cosechas.length === 0 ? (
         <div className="bg-white rounded-xl border border-crema-oscuro p-5">
           <p className="text-sm text-gray-500">No hay cosechas registradas.</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
-          {cosechas.map((c) => (
-            <div
-              key={c.id}
-              className="bg-white rounded-xl border border-crema-oscuro border-l-4 border-l-verde-medio p-4"
-            >
-              <div className="flex justify-between items-start gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-verde text-base">{c.genetica_nombre}</div>
-                  <div className="text-xs text-gray-600 mt-1 font-sans">
-                    Lote: <strong>{c.lote}</strong> · {fmtFecha(c.fecha)}
-                  </div>
-                  {c.notas && (
-                    <div className="text-xs text-gray-500 mt-1 italic font-sans">{c.notas}</div>
-                  )}
-                </div>
-                <div className="flex flex-col items-end flex-shrink-0">
-                  <div className="text-2xl font-bold text-verde leading-none">{c.gramos}g</div>
-                  <div className="text-[10px] text-gray-500 mb-2 font-sans">cosechados</div>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => abrirEditar(c)}
-                      className="text-verde hover:bg-verde/10 p-1.5 rounded transition"
-                      title="Editar"
-                    >
-                      <Pencil size={15} />
-                    </button>
-                    <button
-                      onClick={() => eliminar(c)}
-                      className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
-                      title="Eliminar"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="bg-white rounded-xl border border-crema-oscuro overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-crema-oscuro bg-crema/50">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Genética</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Lote</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Fecha</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Notas</th>
+                <th className="text-right text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Gramos</th>
+                <th className="px-4 py-2.5"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-crema-oscuro">
+              {cosechas.map((c) => (
+                <tr key={c.id} className="hover:bg-crema/30 transition">
+                  <td className="px-4 py-2.5 font-semibold text-verde">{c.genetica_nombre}</td>
+                  <td className="px-4 py-2.5 font-sans text-gray-600 text-xs">{c.lote}</td>
+                  <td className="px-4 py-2.5 font-sans text-gray-600 text-xs">{fmtFecha(c.fecha)}</td>
+                  <td className="px-4 py-2.5 font-sans text-gray-400 text-xs italic">{c.notas || '—'}</td>
+                  <td className="px-4 py-2.5 text-right font-bold text-verde font-sans">{c.gramos}g</td>
+                  <td className="px-4 py-2.5">
+                    <div className="flex gap-1 justify-end">
+                      <button
+                        onClick={() => abrirEditar(c)}
+                        className="text-verde hover:bg-verde/10 p-1.5 rounded transition"
+                        title="Editar"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => eliminar(c)}
+                        className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
+                        title="Eliminar"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -149,10 +152,7 @@ export default function Cosechas() {
               <h3 className="text-lg font-bold text-verde">
                 {editando ? 'Editar Cosecha' : 'Registrar Cosecha'}
               </h3>
-              <button
-                onClick={cerrarModal}
-                className="text-gray-500 hover:text-gray-800"
-              >
+              <button onClick={cerrarModal} className="text-gray-500 hover:text-gray-800">
                 <X size={20} />
               </button>
             </div>

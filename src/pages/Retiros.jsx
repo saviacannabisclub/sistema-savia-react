@@ -7,9 +7,25 @@ import { useCosechas } from '../Hooks/useCosechas'
 import { stockPorGenetica } from '../lib/calculos'
 import { fmtFecha } from '../lib/format'
 
-
-// Item vacío para el formulario
 const ITEM_VACIO = { genetica_id: '', gramos: '' }
+
+// Color por nombre de genética (bg, text, border)
+const COLORES_GENETICA = {
+  'black valentine':  { bg: 'bg-gray-800',   text: 'text-white',     border: 'border-gray-900' },
+  'cafe americano':   { bg: 'bg-red-600',     text: 'text-white',     border: 'border-red-700' },
+  'flava flav':       { bg: 'bg-green-600',   text: 'text-white',     border: 'border-green-700' },
+  'mintz':            { bg: 'bg-blue-500',    text: 'text-white',     border: 'border-blue-600' },
+  'lemon cherry soap':{ bg: 'bg-yellow-400',  text: 'text-gray-800',  border: 'border-yellow-500' },
+  'lit og':           { bg: 'bg-purple-600',  text: 'text-white',     border: 'border-purple-700' },
+  'sticky rice':      { bg: 'bg-amber-100',   text: 'text-amber-900', border: 'border-amber-300' },
+}
+
+const DEFAULT_COLOR = { bg: 'bg-crema', text: 'text-gray-700', border: 'border-crema-oscuro' }
+
+function colorPorNombre(nombre = '') {
+  const key = nombre.toLowerCase().trim()
+  return COLORES_GENETICA[key] || DEFAULT_COLOR
+}
 
 export default function Retiros() {
   const { retiros, loading, createRetiro, deleteRetiro } = useRetiros()
@@ -27,7 +43,6 @@ export default function Retiros() {
     [geneticas, cosechas, retiros]
   )
 
-  // Stock "tentativo" que descuenta lo que ya se cargó en otros items del mismo modal
   const stockDisponiblePara = (idx, genId) => {
     if (!genId) return 0
     const base = stock[genId] || 0
@@ -43,9 +58,9 @@ export default function Retiros() {
   const sociosActivos = socios.filter((s) => s.activo && !s.es_demo)
   const geneticasActivas = geneticas.filter((g) => g.activa)
 
-const abrirNuevo = () => {
+  const abrirNuevo = () => {
     setSocioId('')
-    setFecha(new Date().toISOString().split('T')[0]) // hoy por defecto
+    setFecha(new Date().toISOString().split('T')[0])
     setItems([{ ...ITEM_VACIO }])
     setModalOpen(true)
   }
@@ -63,7 +78,6 @@ const abrirNuevo = () => {
     setItems(items.map((it, i) => (i === idx ? { ...it, [campo]: valor } : it)))
   }
 
-  // Validaciones
   const itemsValidos = items.every((it) => it.genetica_id && parseFloat(it.gramos) > 0)
   const hayItemsRepetidos = (() => {
     const ids = items.map((it) => it.genetica_id).filter(Boolean)
@@ -75,21 +89,18 @@ const abrirNuevo = () => {
     return gr <= (stock[gen] || 0)
   })
   const totalGramos = items.reduce((a, it) => a + (parseFloat(it.gramos) || 0), 0)
-
   const puedeCrear = socioId && itemsValidos && !hayItemsRepetidos && stockSuficiente
 
   const crear = async (e) => {
     e.preventDefault()
     if (!puedeCrear) return
-
     const socio = socios.find((s) => s.id === parseInt(socioId))
     const itemsParaCrear = items.map((it) => ({
       genetica: geneticas.find((g) => g.id === parseInt(it.genetica_id)),
       gramos: parseFloat(it.gramos),
     }))
-
-await createRetiro({
-      socio: socio,
+    await createRetiro({
+      socio,
       items: itemsParaCrear,
       fecha: fecha ? new Date(fecha).toISOString() : null,
     })
@@ -120,44 +131,58 @@ await createRetiro({
           <p className="text-sm text-gray-500">No hay retiros registrados.</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
-          {retiros.map((r) => {
-            const totalGr = (r.items || []).reduce((a, it) => a + Number(it.gramos), 0)
-            return (
-              <div
-                key={r.id}
-                className="bg-white rounded-xl border border-crema-oscuro border-l-4 border-l-verde p-4"
-              >
-                <div className="flex justify-between items-start gap-2 mb-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-base">{r.socio_nombre}</div>
-                    <div className="text-xs text-gray-500 mt-0.5 font-sans">
-                      {fmtFecha(r.fecha)} · Lote {r.lote}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="font-bold text-verde text-sm">{totalGr}g total</span>
-                    <button
-                      onClick={() => eliminar(r)}
-                      className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
-                      title="Eliminar"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </div>
-                {/* Items del retiro */}
-                <div className="bg-crema-suave rounded-lg p-2.5 space-y-1">
-                  {(r.items || []).map((it) => (
-                    <div key={it.id} className="flex justify-between text-xs font-sans">
-                      <span className="text-gray-700">{it.genetica_nombre}</span>
-                      <span className="font-semibold">{it.gramos}g</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          })}
+        <div className="bg-white rounded-xl border border-crema-oscuro overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-crema-oscuro bg-crema/50">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Socio</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Fecha</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Lote</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Genéticas</th>
+                <th className="text-right text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Total</th>
+                <th className="px-4 py-2.5"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-crema-oscuro">
+              {retiros.map((r) => {
+                const totalGr = (r.items || []).reduce((a, it) => a + Number(it.gramos), 0)
+                return (
+                  <tr key={r.id} className="hover:bg-crema/30 transition">
+                    <td className="px-4 py-2.5 font-semibold text-verde">{r.socio_nombre}</td>
+                    <td className="px-4 py-2.5 font-sans text-gray-600 text-xs">{fmtFecha(r.fecha)}</td>
+                    <td className="px-4 py-2.5 font-sans text-gray-600 text-xs">{r.lote}</td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex flex-wrap gap-1">
+                        {(r.items || []).map((it) => {
+                          const { bg, text, border } = colorPorNombre(it.genetica_nombre)
+                          return (
+                            <span
+                              key={it.id}
+                              className={`inline-flex items-center gap-1 text-[11px] font-sans font-medium px-2 py-0.5 rounded-full border ${bg} ${text} ${border}`}
+                            >
+                              {it.genetica_nombre} · <strong>{it.gramos}g</strong>
+                            </span>
+                          )
+                        })}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-bold text-verde font-sans">{totalGr}g</td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => eliminar(r)}
+                          className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
+                          title="Eliminar"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -179,7 +204,6 @@ await createRetiro({
             </div>
 
             <form onSubmit={crear} className="space-y-3">
-              {/* Socio */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1 font-sans">
                   Socio *
@@ -198,7 +222,7 @@ await createRetiro({
                   ))}
                 </select>
               </div>
-{/* Fecha */}
+
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1 font-sans">
                   Fecha del retiro *
@@ -212,7 +236,6 @@ await createRetiro({
                 />
               </div>
 
-              {/* Items: una fila por genética */}
               <div className="border-t border-crema-oscuro pt-3">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2 font-sans">
                   Genéticas a retirar
@@ -296,7 +319,6 @@ await createRetiro({
                 </div>
               )}
 
-              {/* Resumen */}
               {totalGramos > 0 && (
                 <div className="bg-verde-claro border border-verde/30 rounded-lg p-3 flex justify-between items-center">
                   <span className="text-sm font-semibold text-verde">Total a retirar:</span>

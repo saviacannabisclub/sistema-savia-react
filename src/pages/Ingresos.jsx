@@ -38,7 +38,6 @@ export default function Ingresos() {
   const guardar = async (e) => {
     e.preventDefault()
     if (!form.concepto.trim() || !form.monto) return
-
     const socio = socios.find((s) => s.id === parseInt(form.socio_id))
     await createIngreso({
       ...form,
@@ -95,44 +94,49 @@ export default function Ingresos() {
         ))}
       </div>
 
-      {/* Lista */}
+      {/* Tabla */}
       {filtrados.length === 0 ? (
         <div className="bg-white rounded-xl border border-crema-oscuro p-5">
           <p className="text-sm text-gray-500">No hay ingresos en esta categoría.</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
-          {filtrados.map((i) => (
-            <div
-              key={i.id}
-              className="bg-white rounded-xl border border-crema-oscuro border-l-4 border-l-verde-medio p-4"
-            >
-              <div className="flex justify-between items-start gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-base">{i.concepto}</div>
-                  <div className="text-xs text-gray-500 mt-0.5 font-sans">
-                    {i.tipo} · {fmtFecha(i.fecha)}
-                  </div>
-                  {i.socio_nombre && (
-                    <div className="text-xs text-gray-600 mt-0.5 font-sans">👤 {i.socio_nombre}</div>
-                  )}
-                  {i.notas && (
-                    <div className="text-xs text-gray-500 mt-0.5 italic font-sans">{i.notas}</div>
-                  )}
-                </div>
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                  <div className="text-xl font-bold text-verde">{fmt(i.monto)}</div>
-                  <button
-                    onClick={() => eliminar(i)}
-                    className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
-                    title="Eliminar"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="bg-white rounded-xl border border-crema-oscuro overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-crema-oscuro bg-crema/50">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Concepto</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Tipo</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Socio</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Fecha</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Notas</th>
+                <th className="text-right text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Monto</th>
+                <th className="px-4 py-2.5"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-crema-oscuro">
+              {filtrados.map((i) => (
+                <tr key={i.id} className="hover:bg-crema/30 transition">
+                  <td className="px-4 py-2.5 font-semibold text-verde">{i.concepto}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans whitespace-nowrap">{i.tipo}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans whitespace-nowrap">{i.socio_nombre || '—'}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans whitespace-nowrap">{fmtFecha(i.fecha)}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-400 font-sans italic">{i.notas || '—'}</td>
+                  <td className="px-4 py-2.5 text-right font-bold text-verde font-sans whitespace-nowrap">{fmt(i.monto)}</td>
+                  <td className="px-4 py-2.5">
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => eliminar(i)}
+                        className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
+                        title="Eliminar"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

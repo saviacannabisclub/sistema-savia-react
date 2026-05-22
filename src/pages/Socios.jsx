@@ -78,65 +78,70 @@ export default function Socios() {
           <p className="text-sm text-gray-500">No hay socios cargados.</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
-          {socios_filtrados.map((s) => (
-            <div
-              key={s.id}
-              className={`bg-white rounded-xl border border-crema-oscuro p-4 transition ${
-                !s.activo ? 'opacity-60' : ''
-              }`}
-            >
-              <div className="flex justify-between items-start gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="font-bold text-verde">{s.nombre}</span>
-                    <span className="text-xs text-gray-500 font-sans">#{s.numero || '000'}</span>
-                    <span
-                      className={`text-[11px] px-2.5 py-0.5 rounded-full font-sans font-semibold ${
-                        s.activo
-                          ? 'bg-verde/10 text-verde border border-verde/40'
-                          : 'bg-gray-200 text-gray-500 border border-gray-300'
-                      }`}
-                    >
+        <div className="bg-white rounded-xl border border-crema-oscuro overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-crema-oscuro bg-crema/50">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">#</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Nombre</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Estado</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">DNI</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">REPROCANN</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Dirección</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Teléfono</th>
+                <th className="px-4 py-2.5"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-crema-oscuro">
+              {socios_filtrados.map((s) => (
+                <tr key={s.id} className={`hover:bg-crema/30 transition ${!s.activo ? 'opacity-60' : ''}`}>
+                  <td className="px-4 py-2.5 text-xs text-gray-500 font-sans font-semibold">{s.numero || '—'}</td>
+                  <td className="px-4 py-2.5 font-semibold text-verde whitespace-nowrap">{s.nombre}</td>
+                  <td className="px-4 py-2.5">
+                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-sans font-semibold border ${
+                      s.activo
+                        ? 'bg-verde/10 text-verde border-verde/40'
+                        : 'bg-gray-200 text-gray-500 border-gray-300'
+                    }`}>
                       {s.activo ? 'Activo' : 'Inactivo'}
                     </span>
-                  </div>
-                  <div className="text-xs text-gray-600 space-y-0.5 font-sans">
-                    {s.dni && <div>DNI: <span className="font-semibold">{s.dni}</span></div>}
-                    {s.reprocann && (
-                      <div>REPROCANN: <span className="font-semibold">{s.reprocann}</span></div>
-                    )}
-                    {s.direccion && <div>📍 {s.direccion}</div>}
-                    {s.tel && <div>📱 {s.tel}</div>}
-                  </div>
-                </div>
-                <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                  <button
-                    onClick={() => abrirEditar(s)}
-                    className="text-verde hover:bg-verde/10 px-2 py-1 rounded transition flex items-center gap-1 text-xs font-sans"
-                  >
-                    <Pencil size={13} /> Editar
-                  </button>
-                  <button
-                    onClick={() => toggleSocio(s.id)}
-                    className={`text-xs px-2.5 py-1 rounded-lg border font-semibold font-sans transition ${
-                      s.activo
-                        ? 'border-red-500 text-red-600 hover:bg-red-50'
-                        : 'border-verde text-verde hover:bg-verde/10'
-                    }`}
-                  >
-                    {s.activo ? 'Pausar' : 'Activar'}
-                  </button>
-                  <button
-                    onClick={() => eliminar(s)}
-                    className="text-red-600 hover:bg-red-50 px-2 py-1 rounded transition flex items-center gap-1 text-xs font-sans"
-                  >
-                    <Trash2 size={13} /> Eliminar
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+                  </td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans">{s.dni || '—'}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans">{s.reprocann || '—'}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans">{s.direccion || '—'}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans">{s.tel || '—'}</td>
+                  <td className="px-4 py-2.5">
+                    <div className="flex items-center gap-1 justify-end">
+                      <button
+                        onClick={() => abrirEditar(s)}
+                        className="text-verde hover:bg-verde/10 p-1.5 rounded transition"
+                        title="Editar"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => toggleSocio(s.id)}
+                        className={`text-[11px] px-2 py-1 rounded-lg border font-semibold font-sans transition ${
+                          s.activo
+                            ? 'border-red-400 text-red-600 hover:bg-red-50'
+                            : 'border-verde text-verde hover:bg-verde/10'
+                        }`}
+                      >
+                        {s.activo ? 'Pausar' : 'Activar'}
+                      </button>
+                      <button
+                        onClick={() => eliminar(s)}
+                        className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
+                        title="Eliminar"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

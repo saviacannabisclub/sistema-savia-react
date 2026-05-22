@@ -89,47 +89,51 @@ export default function Egresos() {
         ))}
       </div>
 
-      {/* Lista */}
+      {/* Tabla */}
       {filtrados.length === 0 ? (
         <div className="bg-white rounded-xl border border-crema-oscuro p-5">
           <p className="text-sm text-gray-500">No hay egresos en esta categoría.</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
-          {filtrados.map((eg) => (
-            <div
-              key={eg.id}
-              className="bg-white rounded-xl border border-crema-oscuro border-l-4 border-l-red-500 p-4"
-            >
-              <div className="flex justify-between items-start gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-base">{eg.concepto}</div>
-                  <div className="text-xs text-gray-500 mt-0.5 font-sans">
-                    {eg.tipo} · {fmtFecha(eg.fecha)}
-                  </div>
-                  {eg.responsable && (
-                    <div className="text-xs text-gray-600 mt-0.5 font-sans">👤 {eg.responsable}</div>
-                  )}
-                  {eg.comprobante && (
-                    <div className="text-xs text-verde mt-0.5 font-sans">📄 N°: {eg.comprobante}</div>
-                  )}
-                  {eg.notas && (
-                    <div className="text-xs text-gray-500 mt-0.5 italic font-sans">{eg.notas}</div>
-                  )}
-                </div>
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                  <div className="text-xl font-bold text-red-600">-{fmt(eg.monto)}</div>
-                  <button
-                    onClick={() => eliminar(eg)}
-                    className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
-                    title="Eliminar"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="bg-white rounded-xl border border-crema-oscuro overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-crema-oscuro bg-crema/50">
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Concepto</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Tipo</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Responsable</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Comprobante</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Fecha</th>
+                <th className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Notas</th>
+                <th className="text-right text-xs font-semibold uppercase tracking-wider text-gray-500 font-sans px-4 py-2.5">Monto</th>
+                <th className="px-4 py-2.5"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-crema-oscuro">
+              {filtrados.map((eg) => (
+                <tr key={eg.id} className="hover:bg-red-50/30 transition">
+                  <td className="px-4 py-2.5 font-semibold text-gray-800">{eg.concepto}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans whitespace-nowrap">{eg.tipo}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans whitespace-nowrap">{eg.responsable || '—'}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans whitespace-nowrap">{eg.comprobante || '—'}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-600 font-sans whitespace-nowrap">{fmtFecha(eg.fecha)}</td>
+                  <td className="px-4 py-2.5 text-xs text-gray-400 font-sans italic">{eg.notas || '—'}</td>
+                  <td className="px-4 py-2.5 text-right font-bold text-red-600 font-sans whitespace-nowrap">-{fmt(eg.monto)}</td>
+                  <td className="px-4 py-2.5">
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => eliminar(eg)}
+                        className="text-red-600 hover:bg-red-50 p-1.5 rounded transition"
+                        title="Eliminar"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
