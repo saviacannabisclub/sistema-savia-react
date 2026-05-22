@@ -56,6 +56,7 @@ export default function Contable() {
         monto: Number(i.monto),
         tipo: 'ingreso',
         sub: i.tipo,
+        socio_id: i.socio_id,
       })),
       ...egrF.map((e) => ({
         id: `e-${e.id}`,
@@ -89,6 +90,24 @@ export default function Contable() {
       .filter(Boolean)
       .sort((a, b) => b.gramos_total - a.gramos_total)
   }, [socios, retF])
+
+  // Ingresos por socio
+  const ingresosPorSocio = useMemo(() => {
+    return socios
+      .filter((s) => !s.es_demo)
+      .map((s) => {
+        const is = ingF.filter((i) => i.socio_id === s.id)
+        if (!is.length) return null
+        const monto_total = is.reduce((a, i) => a + Number(i.monto), 0)
+        return {
+          ...s,
+          ingresos_count: is.length,
+          monto_total,
+        }
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.monto_total - a.monto_total)
+  }, [socios, ingF])
 
   if (loading) return <p className="text-gray-500">Cargando información contable...</p>
 
@@ -127,6 +146,12 @@ export default function Contable() {
                   <div className="text-[11px] text-gray-500 font-sans">
                     {fmtFecha(m.fecha)} · {m.sub}
                   </div>
+                  {m.socio_id && (() => {
+                    const s = socios.find((s) => s.id === m.socio_id)
+                    return s ? (
+                      <div className="text-[11px] text-verde font-sans font-bold">{s.nombre}</div>
+                    ) : null
+                  })()}
                 </div>
                 <div
                   className={`font-bold text-sm font-sans ${
@@ -141,7 +166,7 @@ export default function Contable() {
         )}
       </div>
 
-      <div className="bg-white rounded-xl border border-crema-oscuro p-5">
+      <div className="bg-white rounded-xl border border-crema-oscuro p-5 mb-3">
         <h3 className="text-base font-bold text-verde mb-3">Retiros por socio</h3>
         {retirosPorSocio.length === 0 ? (
           <p className="text-sm text-gray-500">Sin retiros en este período.</p>
@@ -164,6 +189,31 @@ export default function Contable() {
           </div>
         )}
       </div>
+
+      <div className="bg-white rounded-xl border border-crema-oscuro p-5">
+        <h3 className="text-base font-bold text-verde mb-3">Ingresos por socio</h3>
+        {ingresosPorSocio.length === 0 ? (
+          <p className="text-sm text-gray-500">Sin ingresos en este período.</p>
+        ) : (
+          <div className="divide-y divide-crema-oscuro">
+            {ingresosPorSocio.map((s) => (
+              <div key={s.id} className="flex justify-between items-center py-2.5">
+                <div>
+                  <div className="text-sm font-semibold">
+                    {s.nombre}{' '}
+                    <span className="text-xs text-gray-500 font-sans font-normal">#{s.numero}</span>
+                  </div>
+                  <div className="text-[11px] text-gray-500 font-sans">
+                    {s.ingresos_count} {s.ingresos_count === 1 ? 'ingreso' : 'ingresos'}
+                  </div>
+                </div>
+                <span className="font-bold text-verde">{fmt(s.monto_total)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   )
 }
